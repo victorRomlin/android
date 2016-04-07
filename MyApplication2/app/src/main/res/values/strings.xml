@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">LifeByME</string>
+    <string name="action_settings">Settings</string>
+    <string name="happy">happy</string>
+    <string name="nofeelings">nofeelings</string>
+    <string name="sad">sad</string>
+</resources>
