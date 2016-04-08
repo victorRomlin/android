@@ -24,6 +24,9 @@
         <activity
             android:name=".loginactivity">
         </activity>
+        <activity
+            android:name=".createuser">
+        </activity>
 
     </application>
 

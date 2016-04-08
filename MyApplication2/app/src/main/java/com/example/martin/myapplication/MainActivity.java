@@ -66,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
             login(username,password);
 
         }
+
+        else if (V.getId() == R.id.button2){
+            Intent r = new Intent(MainActivity.this, createuser.class);
+            startActivity(r);
+        }
     }
     private class LoginTask extends AsyncTask<String, Void, String>{
 
