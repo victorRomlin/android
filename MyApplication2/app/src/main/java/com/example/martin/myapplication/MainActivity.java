@@ -18,6 +18,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Iterator;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,46 +63,29 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(username);
             System.out.println(password);
 
-            connect(username,password);
-
-           /* if (username.equals(password)){
-                System.out.println("yes!!!");
-                Intent r = new Intent(MainActivity.this, loginactivity.class);
-                r.putExtra("location", username);
-                startActivity(r);
-                Toast.makeText(getApplicationContext(), "Redirecting..", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                System.out.println("nooooooo");
-                Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
-                editTextPassword.setText("");
-                editTextUsername.setText("");
-            }*/
+            login(username,password);
 
         }
     }
-    private class PostVariableTask extends AsyncTask<String, Void, String>{
+    private class LoginTask extends AsyncTask<String, Void, String>{
 
         @Override
         protected String doInBackground(String... params) {
             String response = "";
             String output = "";
-            String answer ="";
+            //String answer ="";
+
             for(String url: params){
                 response = getURLResponse(url);
             }
             try {
-                output = ConvertJson(response.toString(),"Svar");
+
+                JSONObject object = new JSONObject(response.toString());
+                   output = checkCorrectUser(object);
+
                 System.out.println(output);
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-            if (output.contains("1")){
-                System.out.println("its alive");
-                output = "login Success";
-            }
-            else{
-                output = "login Fail";
             }
             return output;
         }
@@ -108,14 +93,21 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             System.out.println(result);
             //setText(result);
-            if(result.contains("login Success")){
+            if(result.contains("TRUE")){
                 Intent r = new Intent(MainActivity.this, loginactivity.class);
                 r.putExtra("location", username);
                 startActivity(r);
                 Toast.makeText(getApplicationContext(), "Redirecting..", Toast.LENGTH_SHORT).show();
             }
+            else if(result.contains("ERROR")){
+                Toast.makeText(getApplicationContext(), "database Fail", Toast.LENGTH_SHORT).show();
+                EditText editTextPassword = ((EditText) findViewById(R.id.editText1));
+                EditText editTextUsername = ((EditText) findViewById(R.id.editText2));
+                editTextPassword.setText("");
+                editTextUsername.setText("");
+            }
             else{
-                Toast.makeText(getApplicationContext(), "Login Fail", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "login Fail", Toast.LENGTH_SHORT).show();
                 EditText editTextPassword = ((EditText) findViewById(R.id.editText1));
                 EditText editTextUsername = ((EditText) findViewById(R.id.editText2));
                 editTextPassword.setText("");
@@ -123,6 +115,36 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+    private String checkCorrectUser(JSONObject object){
+        String answer = "ERROR";
+        try {
+            System.out.println(object.getString("DATA"));
+            if(!object.getString("TYPE").contains("ERROR")) {
+                answer = "FALSE";
+                if (object.getString("DATA").contains("TRUE")) {
+                   answer = "TRUE";
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return answer;
+    }
+   /* private Boolean checkIfCorrect(JSONObject object){
+        try {
+            if(object.getString("TYPE").contains("ERROR")){
+                return false;
+            }
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }return false;
+    }
+    */
+    private String checkType(JSONObject object){
+      return object.toString();
     }
     private String getURLResponse(String url){
         HttpURLConnection connection = null;
@@ -152,16 +174,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private String ConvertJson(String response, String key) throws JSONException {
-        JSONArray array = new JSONArray(response);
+    private String ConvertJsonToData(String response) throws JSONException {
+        JSONObject array = new JSONObject(response.toString());
         response ="";
         System.out.println(array.length());
-        for (int i = 0; i < array.length(); i++){
-            JSONObject json = array.getJSONObject(i);
-            response += json.getString(key);
-            response += '\t';
+        if(!array.getString("TYPE").contains("ERROR")) {
+            JSONObject datastring = array.getJSONObject("DATA");
+            Iterator<String> keys = datastring.keys();
+            while (keys.hasNext()) {
+              String key = keys.next();
+                 response += datastring.getString(key);
+
+               // response += json.getString(key);
+               // response += '\t';
+            }
+            System.out.println(response);
+            return response;
         }
-        return response;
+        return array.getString("TYPE");
     }
 
     private void setText(String inputText){
@@ -199,11 +229,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupConnection(String[] url){
-        PostVariableTask task = new PostVariableTask();
+        LoginTask task = new LoginTask();
         task.execute(url);
     }
 
-    private void connect(String user, String pwd) {
+    private void login(String user, String pwd) {
         //String program = "phptest.php?";
         //String program2 = "insertion.php?";
         //String testData = "http://pub.jamaica-inn.net/fpdb/api.php?username=jorass&password=jorass&action=iou_get";
@@ -216,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         String username = user;
         String password = pwd;
         setText("söker...");
-        String testdata = SetupURLValueSend("createUser.php?",empty1,empty2,username,password);
+        String testdata = SetupURLValueSend("JSONgen.php?",empty1,empty2,username,password);
         //String testdata2 = SetupURLValueSend("insertion.php?", values, keys,username,password);
         System.out.println(testdata);
         setupConnection(new String[]{testdata});
