@@ -11,9 +11,13 @@ import android.widget.TextView;
 
 /**
  * Created by Martin on 2016-04-05.
+ * ich han små vänner
  */
 
 public class loginactivity extends Activity {
+
+    //DEThär ska bort
+    int BubbaFett;
 
     NumberPicker np;
     ImageButton happyB;
