@@ -12,6 +12,7 @@ public class CreateUserActivity extends Activity {
     String email;
     String username;
     String password;
+    String confirmedpassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,14 +23,15 @@ public class CreateUserActivity extends Activity {
 
     public void onButtonClick(View V){
         if (V.getId() == R.id.button3){
-            System.out.println("Registrera");
 
             email = ((EditText) findViewById(R.id.textemail)).getText().toString();
             username = ((EditText) findViewById(R.id.textusername)).getText().toString();
             password = ((EditText) findViewById(R.id.textpassword)).getText().toString();
-            System.out.println(email);
-            System.out.println(username);
-            System.out.println(password);
+            confirmedpassword = ((EditText) findViewById(R.id.textconfirmpassword)).getText().toString();
+
+            if(password.equals(confirmedpassword)){
+                // skicka data till server HÄR (anropa Connect() ).
+            }
     }
     }
 

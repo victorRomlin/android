@@ -14,7 +14,7 @@ import android.widget.TextView;
  * ich han små vänner
  */
 
-public class loginactivity extends Activity {
+public class LoginActivity extends Activity {
 
     //DEThär ska bort
     int BubbaFett;

@@ -9,16 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top|left"
-        android:layout_margin="20dp">
+        android:layout_margin="20dp"
+        android:scrollIndicators="right"
+        android:nestedScrollingEnabled="false">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="E-mail"
             android:id="@+id/textView3"
-            android:layout_marginTop="128dp"
+            android:layout_marginTop="40dp"
             android:textSize="25dp"
-            android:layout_alignParentTop="true"
+            android:layout_below="@+id/textView6"
             android:layout_alignLeft="@+id/textView5"
             android:layout_alignStart="@+id/textView5" />
 
@@ -27,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="Username"
             android:id="@+id/textView4"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="25dp"
             android:textSize="25dp"
             android:layout_below="@+id/textemail"
             android:layout_alignLeft="@+id/textusername"
@@ -39,7 +41,7 @@
             android:text="Password"
             android:id="@+id/textView5"
             android:textSize="25dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="25dp"
             android:layout_below="@+id/textusername"
             android:layout_alignRight="@+id/textView4"
             android:layout_alignEnd="@+id/textView4" />
@@ -81,25 +83,45 @@
             android:layout_height="wrap_content"
             android:text="Register"
             android:id="@+id/button3"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="36dp"
             android:padding="20dp"
             android:textSize="20dp"
             android:textColor="#ffffff"
             android:background="@drawable/cornersbutton"
-            android:onClick="onButtonClick" />
+            android:onClick="onButtonClick"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Registrera dig som användare!"
+            android:text="Registrera dig som användare"
             android:id="@+id/textView6"
-            android:layout_marginTop="40dp"
             android:textSize="20dp"
             android:layout_alignParentTop="true"
             android:layout_alignLeft="@+id/textView3"
             android:layout_alignStart="@+id/textView3" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirm password"
+            android:id="@+id/textView7"
+            android:textSize="25dp"
+            android:layout_below="@+id/textpassword"
+            android:layout_alignLeft="@+id/textpassword"
+            android:layout_alignStart="@+id/textpassword"
+            android:layout_marginTop="25dp" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/textconfirmpassword"
+            android:textSize="20dp"
+            android:layout_below="@+id/textView7"
+            android:layout_alignLeft="@+id/textView7"
+            android:layout_alignStart="@+id/textView7" />
 
     </RelativeLayout>
 </FrameLayout>

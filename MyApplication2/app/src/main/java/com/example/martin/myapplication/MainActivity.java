@@ -1,8 +1,6 @@
 package com.example.martin.myapplication;
 
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.widget.TextView;
 //import com.google.android.gms.appindexing.Action;
 //import com.google.android.gms.appindexing.AppIndex;
@@ -16,25 +14,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Iterator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -68,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         else if (V.getId() == R.id.button2){
-            Intent r = new Intent(MainActivity.this, createuser.class);
+            Intent r = new Intent(MainActivity.this, CreateUserActivity.class);
             startActivity(r);
         }
     }
@@ -99,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(result);
             //setText(result);
             if(result.contains("TRUE")){
-                Intent r = new Intent(MainActivity.this, loginactivity.class);
+                Intent r = new Intent(MainActivity.this, LoginActivity.class);
                 r.putExtra("location", username);
                 startActivity(r);
                 Toast.makeText(getApplicationContext(), "Redirecting..", Toast.LENGTH_SHORT).show();
