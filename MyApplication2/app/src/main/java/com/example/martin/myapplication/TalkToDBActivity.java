@@ -28,16 +28,24 @@ import java.util.Iterator;
 
 public class TalkToDBActivity extends Activity {
 
-    String email = "@gmail.com";
+    String email = "";
+    int requestType;
+    String user;
+    String pwd;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String user = intent.getStringExtra("username");
-        String pwd = intent.getStringExtra("password");
-        if(intent.getIntExtra("requestCode",7) == 1){
+        user = intent.getStringExtra("username");
+        pwd = intent.getStringExtra("password");
+        requestType = intent.getIntExtra("requestCode",7);
+        if(requestType == 1){
             login(user,pwd);
+        }
+        if(requestType == 2){
+            email = intent.getStringExtra("email");
+            createUser(user,pwd,email);
         }
 
 
@@ -55,12 +63,19 @@ public class TalkToDBActivity extends Activity {
             }
             try {
                 JSONObject object = new JSONObject(response.toString());
-                if(!checkFail(object)){
-                    if(checkCorrectUser(object)){
-                     output = "TRUE";
-                        System.out.println(output);
+                    if (!checkFail(object)) {
+                        if(checkType(object).contains("LOGIN")){
+                            if (checkCorrectUser(object)) {
+                                output = "LOGIN SUCCESS";
+                                System.out.println(output);
+                            }
+                        }
+                        else if(checkType(object).contains("NEW USER")){
+                            if (checkCorrectUser(object)){
+                                output = "NEW USER ADDED";
+                            }
+                        }
                     }
-                }
 
                 System.out.println(output);
             } catch (JSONException e) {
@@ -68,17 +83,44 @@ public class TalkToDBActivity extends Activity {
             }
             return output;
         }
+
         @Override
         protected void onPostExecute(String result) {
-            if(result.contains("TRUE")){
+            if(result.contains("LOGIN SUCCESS") && requestType == 1){
                Intent returnIntent = new Intent();
                 returnIntent.putExtra("result",result);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
                 System.out.println("onPostExecute");
             }
-            else{
+            else if (result.contains("LOGIN SUCCESS") && requestType == 2){
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result","User already exists");
+                setResult(Activity.RESULT_CANCELED, returnIntent);
                 finish();
+                System.out.println("onPostExecute");
+            }
+            else if(result.contains("NEW USER ADDED") && requestType == 2){
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result",result);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+                System.out.println("onPostExecute");
+
+            }
+            else if(!result.contains("LOGIN SUCCESS") && requestType == 2){
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result",result);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+                System.out.println("onPostExecute");
+            }
+            else{
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result","fail");
+                setResult(Activity.RESULT_CANCELED, returnIntent);
+                finish();
+                System.out.println("onPostExecute");
             }
         }
 
@@ -86,7 +128,22 @@ public class TalkToDBActivity extends Activity {
 
     private void login(String user, String pwd){
         String URL = setupURLLogin(user,pwd);
+        System.out.println(URL);
         setupConnection(new String[]{URL});
+    }
+
+    private void createUser(String user, String pwd, String email){
+        String URL = setupURLNewUser(user,pwd,email);
+        setupConnection(new String[]{URL});
+    }
+
+    private String checkType(JSONObject object){
+        try {
+            return object.getString("TYPE");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "ERROR";
+        }
     }
 
     private Boolean checkCorrectUser(JSONObject object){
@@ -179,6 +236,24 @@ public class TalkToDBActivity extends Activity {
 
         return data;
 
+    }
+
+    private String setupURLNewUser(String username, String password, String email){
+        String ipadress = "http://www.lifebyme.stsvt16.student.it.uu.se/php/";
+        String program = "NewUser.php?";
+        String data = null;
+
+        try {
+            data = ipadress+program+ URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
+            data += "&" + URLEncoder.encode("pwd", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+            data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            failureHandler();
+        }
+
+        return data;
     }
 
     private String setupURLValueSend(String program, String[] values, String[] keys,String username,String password,String email, String type){
