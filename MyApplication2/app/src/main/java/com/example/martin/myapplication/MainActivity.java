@@ -52,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(username);
             System.out.println(password);
 
-            login(username,password);
+            //login(username,password);
+            Intent r = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(r);
+
 
         }
 
