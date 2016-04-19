@@ -1,8 +1,7 @@
 package com.example.martin.myapplication;
 
-import android.net.Uri;
+import android.app.Activity;
 import android.os.AsyncTask;
-import android.text.Html;
 import android.widget.TextView;
 //import com.google.android.gms.appindexing.Action;
 //import com.google.android.gms.appindexing.AppIndex;
@@ -16,25 +15,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Iterator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -51,6 +41,28 @@ public class MainActivity extends AppCompatActivity {
 //        setSupportActionBar(toolbar);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == 1){
+            if(resultCode == Activity.RESULT_OK){
+                Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
+                String result = data.getStringExtra("result");
+                System.out.println(result);
+                Intent r = new Intent(MainActivity.this, LoginActivity.class);
+                r.putExtra("location", username);
+                startActivity(r);
+            }
+            if(resultCode == Activity.RESULT_CANCELED){
+                System.out.println("FAAAAAAAIL");
+                EditText editTextPassword = ((EditText) findViewById(R.id.editText1));
+                EditText editTextUsername = ((EditText) findViewById(R.id.editText2));
+                Toast.makeText(getApplicationContext(), "Not a valid user", Toast.LENGTH_SHORT).show();
+                editTextPassword.setText("");
+                editTextUsername.setText("");
+
+            }
+        }
+    }
 
     public void onButtonClick(View V){
 
@@ -59,16 +71,24 @@ public class MainActivity extends AppCompatActivity {
             EditText editTextUsername = ((EditText) findViewById(R.id.editText2));
             username = editTextPassword.getText().toString();
             String password = editTextUsername.getText().toString();
+            String email ="";
 
             System.out.println(username);
             System.out.println(password);
 
-            login(username,password);
+            //login(username, password);
+            Intent tent = new Intent(MainActivity.this, TalkToDBActivity.class);
+            tent.putExtra("username",username);
+            tent.putExtra("password",password);
+            int requestCode = 1;
+            tent.putExtra("requestCode", requestCode);
+            startActivityForResult(tent, 1);
+
 
         }
 
         else if (V.getId() == R.id.button2){
-            Intent r = new Intent(MainActivity.this, createuser.class);
+            Intent r = new Intent(MainActivity.this, CreateUserActivity.class);
             startActivity(r);
         }
     }
@@ -99,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(result);
             //setText(result);
             if(result.contains("TRUE")){
-                Intent r = new Intent(MainActivity.this, loginactivity.class);
+                Intent r = new Intent(MainActivity.this, LoginActivity.class);
                 r.putExtra("location", username);
                 startActivity(r);
                 Toast.makeText(getApplicationContext(), "Redirecting..", Toast.LENGTH_SHORT).show();
