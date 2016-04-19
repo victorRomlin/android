@@ -50,7 +50,7 @@ public class CreateUserActivity extends Activity {
 
     public void onButtonClick(View V){
         if (V.getId() == R.id.button3){
-
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
             getFieldValues();
 
             if (password.length()>4){
