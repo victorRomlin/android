@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -50,8 +51,8 @@ public class CreateUserActivity extends Activity {
 
     public void onButtonClick(View V){
         if (V.getId() == R.id.button3){
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
             getFieldValues();
+            hideSoftKeyboard(this);
 
             if (password.length()>4){
                 if(passwordValid()){
@@ -68,6 +69,10 @@ public class CreateUserActivity extends Activity {
 
             }
         }
+    }
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
     public void getFieldValues(){
         email = ((EditText) findViewById(R.id.textemail)).getText().toString();
