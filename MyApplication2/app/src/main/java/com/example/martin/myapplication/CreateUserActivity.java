@@ -59,7 +59,7 @@ public class CreateUserActivity extends Activity {
                 }
                 else{
                     clearFields();
-                    Toast.makeText(getApplicationContext(), "Password not valid", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Passwords does not match", Toast.LENGTH_SHORT).show();
                 }
             }
             else{
@@ -102,7 +102,7 @@ public class CreateUserActivity extends Activity {
         startActivityForResult(tent, 1);
 
     }
-    
+
     private void onUserAlreadyExists(){
         System.out.println("FAAAAAAAIL");
         EditText editTextPassword = ((EditText) findViewById(R.id.textpassword));
