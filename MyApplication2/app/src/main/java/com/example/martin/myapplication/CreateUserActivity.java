@@ -28,7 +28,7 @@ public class CreateUserActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if (requestCode == 2){
             if(resultCode == Activity.RESULT_OK){
-                Toast.makeText(getApplicationContext(), "Added!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "User created!", Toast.LENGTH_SHORT).show();
                 String result = data.getStringExtra("result");
                 System.out.println(result);
                 Intent r = new Intent(CreateUserActivity.this, MainActivity.class);
@@ -36,7 +36,6 @@ public class CreateUserActivity extends Activity {
             }
             if(resultCode == Activity.RESULT_CANCELED){
                 onUserAlreadyExists();
-
             }
         }
         if(requestCode == 1){
@@ -45,51 +44,65 @@ public class CreateUserActivity extends Activity {
             }
             if(resultCode == Activity.RESULT_CANCELED){
                 attemptAddUser();
-
-
             }
         }
     }
 
-
     public void onButtonClick(View V){
         if (V.getId() == R.id.button3){
 
-            email = ((EditText) findViewById(R.id.textemail)).getText().toString();
-            username = ((EditText) findViewById(R.id.textusername)).getText().toString();
-            password = ((EditText) findViewById(R.id.textpassword)).getText().toString();
-            confirmedpassword = ((EditText) findViewById(R.id.textconfirmpassword)).getText().toString();
-            System.out.println("heeeerro first");
-            //if(passwordValid(password) && (password == confirmedpassword)){
-            checkUserExists();
-            System.out.println("heeeerro second");
-           // }
-            System.out.println(email);
-            System.out.println(username);
-            System.out.println(password);
+            getFieldValues();
 
+            if (password.length()>4){
+                if(passwordValid()){
+                    checkUserExists();
+                }
+                else{
+                    clearFields();
+                    Toast.makeText(getApplicationContext(), "Password not valid", Toast.LENGTH_SHORT).show();
+                }
+            }
+            else{
+                clearFields();
+                Toast.makeText(getApplicationContext(), "Password must be larger than four characters", Toast.LENGTH_SHORT).show();
+
+            }
         }
     }
+    public void getFieldValues(){
+        email = ((EditText) findViewById(R.id.textemail)).getText().toString();
+        username = ((EditText) findViewById(R.id.textusername)).getText().toString();
+        password = ((EditText) findViewById(R.id.textpassword)).getText().toString();
+        confirmedpassword = ((EditText) findViewById(R.id.textconfirmpassword)).getText().toString();
+    }
+    public void clearFields(){
+        EditText editTextPassword = ((EditText) findViewById(R.id.textpassword));
+        EditText editTextconfirmedpassword = ((EditText) findViewById(R.id.textconfirmpassword));
+        editTextPassword.setText("");
+        editTextconfirmedpassword.setText("");
+    }
     public void attemptAddUser(){
+
         Intent tent = new Intent(CreateUserActivity.this, TalkToDBActivity.class);
         tent.putExtra("username",username);
-
         tent.putExtra("password",password);
         tent.putExtra("email",email);
         int requestCode = 2;
         tent.putExtra("requestCode", requestCode);
         startActivityForResult(tent, 2);
+
     }
     public void checkUserExists(){
+
         Intent tent = new Intent(CreateUserActivity.this, TalkToDBActivity.class);
         tent.putExtra("username",username);
         tent.putExtra("password",password);
-
         int requestCode = 1;
         tent.putExtra("requestCode", requestCode);
         startActivityForResult(tent, 1);
 
     }
+    
     private void onUserAlreadyExists(){
         System.out.println("FAAAAAAAIL");
         EditText editTextPassword = ((EditText) findViewById(R.id.textpassword));
@@ -100,8 +113,11 @@ public class CreateUserActivity extends Activity {
         editTextUsername.setText("");
         editTextconfirmedpassword.setText("");
     }
-    private boolean passwordValid(String password){
-        return password.length() > 4;
+    private boolean passwordValid(){
+        if(password == confirmedpassword) {
+            return true;
+        }
+        return false;
     }
 
 }
