@@ -22,7 +22,8 @@
         <activity
             android:name=".LoginActivity">
         </activity>
-        <activity android:name=".TalkToDBActivity">
+        <activity android:name=".TalkToDBActivity" android:theme="@style/Theme.Transparent">
+
             </activity>
 
         <activity

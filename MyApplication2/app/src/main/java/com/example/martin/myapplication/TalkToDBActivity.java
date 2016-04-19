@@ -180,7 +180,7 @@ public class TalkToDBActivity extends Activity {
         return data;
 
     }
-    
+
     private String setupURLValueSend(String program, String[] values, String[] keys,String username,String password,String email, String type){
 
         String ipadress = "http://www.lifebyme.stsvt16.student.it.uu.se/php/";
