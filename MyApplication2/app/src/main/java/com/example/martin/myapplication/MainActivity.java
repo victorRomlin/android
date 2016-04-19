@@ -1,6 +1,7 @@
 package com.example.martin.myapplication;
 
 import android.app.Activity;
+
 import android.os.AsyncTask;
 import android.widget.TextView;
 //import com.google.android.gms.appindexing.Action;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
             System.out.println(username);
             System.out.println(password);
-
+            
             //login(username, password);
             Intent tent = new Intent(MainActivity.this, TalkToDBActivity.class);
             tent.putExtra("username",username);
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             int requestCode = 1;
             tent.putExtra("requestCode", requestCode);
             startActivityForResult(tent, 1);
+
 
 
         }
@@ -231,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String SetupURLValueSend(String program, String[] values, String[] keys,String username,String password){
 
-        String ipadress = "http://130.238.15.239/lvl2/";
+        String ipadress = "www.lifebyme.stsvt16.student.it.uu.se/php/";
         String data = "";
         try {
             data = ipadress+program+URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
