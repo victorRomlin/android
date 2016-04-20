@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -32,6 +34,8 @@ public class TalkToDBActivity extends Activity {
     int requestType;
     String user;
     String pwd;
+    String[] values;
+    String[] keys;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -40,15 +44,24 @@ public class TalkToDBActivity extends Activity {
         user = intent.getStringExtra("username");
         pwd = intent.getStringExtra("password");
         requestType = intent.getIntExtra("requestCode",7);
-        if(requestType == 1){
-            login(user,pwd);
+        switch(requestType){
+            case 1:
+                login(user,pwd);
+                break;
+            case 2:
+                email = intent.getStringExtra("email");
+                createUser(user,pwd,email);
+                break;
+            case 3:
+                values = intent.getStringArrayExtra("values");
+                System.out.println(Arrays.toString(values));
+                keys = intent.getStringArrayExtra("keys");
+                sendVariables(user,pwd,values,keys);
+                break;
+            case 4:
+                getVariables(user,pwd);
+                break;
         }
-        if(requestType == 2){
-            email = intent.getStringExtra("email");
-            createUser(user,pwd,email);
-        }
-
-
     }
 
     private class talkToDBTask extends AsyncTask<String, Void, String> {
@@ -75,6 +88,15 @@ public class TalkToDBActivity extends Activity {
                                 output = "NEW USER ADDED";
                             }
                         }
+                        else if(checkType(object).contains("VAR ADDED")){
+                            if(checkCorrectUser(object)){
+                                output = "VARIABLE ADDED";
+
+                            }
+                        }else if(checkType(object).contains("RETR DATA")){
+                            storeValues(object);
+                            output = "VARIABLES RETRIEVED";
+                        }
                     }
 
                 System.out.println(output);
@@ -87,53 +109,78 @@ public class TalkToDBActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             if(result.contains("LOGIN SUCCESS") && requestType == 1){
-               Intent returnIntent = new Intent();
-                returnIntent.putExtra("result",result);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
-                System.out.println("onPostExecute");
+               dbSuccess(result,false);
             }
             else if (result.contains("LOGIN SUCCESS") && requestType == 2){
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("result","User already exists");
-                setResult(Activity.RESULT_CANCELED, returnIntent);
-                finish();
-                System.out.println("onPostExecute");
+               dbFail(result);
             }
             else if(result.contains("NEW USER ADDED") && requestType == 2){
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("result",result);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
-                System.out.println("onPostExecute");
+                dbSuccess(result,false);
 
+            }
+            else if(result.contains("VARIABLE ADDED") && requestType == 3){
+                dbSuccess(result,false);
             }
             else if(!result.contains("LOGIN SUCCESS") && requestType == 2){
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("result",result);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
-                System.out.println("onPostExecute");
+                dbSuccess(result,false);
+
+            }else if(!result.contains("VARIABLES RETRIEVED") && requestType == 4){
+                dbSuccess(result,true);
             }
             else{
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("result","fail");
-                setResult(Activity.RESULT_CANCELED, returnIntent);
-                finish();
-                System.out.println("onPostExecute");
+                dbFail(result);
             }
         }
-
     }
 
     private void login(String user, String pwd){
-        String URL = setupURLLogin(user,pwd);
+        String program = "LogIn.php?";
+        String URL = setupURLBasic(user,pwd,program);
         System.out.println(URL);
         setupConnection(new String[]{URL});
     }
+    private void storeValues(JSONObject object){
+        try {
+            JSONArray jsonKeys = object.getJSONArray("KEYS");
+            JSONArray jsonValues = object.getJSONArray("VALUES");
+            for(int i = 0; i < jsonKeys.length(); i++){
+                keys[i] = jsonKeys.getString(i);
+                values[i] = jsonValues.getString(i);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+    }
+    private void dbFail(String result){
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result",result);
+        setResult(Activity.RESULT_CANCELED, returnIntent);
+        finish();
+        System.out.println("onPostExecute");
+    }
+    private void dbSuccess(String result, boolean receive){
+        Intent returnIntent = new Intent();
+        if(receive){
+            returnIntent.putExtra("keys",keys);
+            returnIntent.putExtra("values",values);
+        }
+        returnIntent.putExtra("result",result);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+        System.out.println("onPostExecute");
+    }
     private void createUser(String user, String pwd, String email){
         String URL = setupURLNewUser(user,pwd,email);
+        setupConnection(new String[]{URL});
+    }
+    private void sendVariables(String user, String pwd, String[]values, String[] keys){
+        String URL = setupURLValueSend(user,pwd,values,keys);
+        setupConnection(new String[]{URL});
+    }
+    private void getVariables(String user, String pwd){
+        String program = "getdata.php?";
+        String URL = setupURLBasic(user,pwd,program);
         setupConnection(new String[]{URL});
     }
 
@@ -200,30 +247,35 @@ public class TalkToDBActivity extends Activity {
 
     }
 
-    private String ConvertJsonToData(String response) throws JSONException {
-        JSONObject array = new JSONObject(response.toString());
-        response ="";
-        System.out.println(array.length());
-        if(!checkFail(array)) {
-            JSONObject datastring = array.getJSONObject("DATA");
-            Iterator<String> keys = datastring.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                response += datastring.getString(key);
+    private String setupURLValueSend(String username, String password, String[] values, String[] keys){
+        String ipadress = "http://www.lifebyme.stsvt16.student.it.uu.se/php/";
+        String url = "";
+        String program = "Add_Var.php?";
 
-                // response += json.getString(key);
-                // response += '\t';
+        try {
+            url = ipadress+program+ URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
+            url += "&" + URLEncoder.encode("pwd", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+            for (int i= 0; i < values.length ; i++){
+                url+="&data[";
+                System.out.println("in to for");
+                if(keys.length >0){
+                    url +=URLEncoder.encode(keys[i],"UTF-8");
+                    url += "][";
+                }
+                url+= "]="+URLEncoder.encode(values[i],"UTF-8");
             }
-            System.out.println(response);
-            return response;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
-        return array.getString("TYPE");
+
+        System.out.println(url);
+        return url;
     }
 
-    private String setupURLLogin(String username, String password) {
+    private String setupURLBasic(String username, String password,String program) {
 
         String ipadress = "http://www.lifebyme.stsvt16.student.it.uu.se/php/";
-        String program = "LogIn.php?";
+
         String data = null;
         try {
             data = ipadress+program+ URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
@@ -256,59 +308,10 @@ public class TalkToDBActivity extends Activity {
         return data;
     }
 
-    private String setupURLValueSend(String program, String[] values, String[] keys,String username,String password,String email, String type){
-
-        String ipadress = "http://www.lifebyme.stsvt16.student.it.uu.se/php/";
-        String data = "";
-        try {
-            data = ipadress+program+ URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
-            data += "&" + URLEncoder.encode("pwd", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
-            if(values.length >0 && type.contains("VALUE")) {
-                for (int i = 0; i < values.length; i++) {
-                    data += "&testdata2[";
-                    if (keys.length>0){
-                        data += URLEncoder.encode(keys[i],"UTF-8");
-                    }
-                    data +="]=" + URLEncoder.encode(values[i], "UTF-8");
-                }
-            }
-            else if(checkValidUserData(username,password,email) && type.contains("NEW USER")){
-                System.out.println("new user");
-            }
-
-        }catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return data;
-
-    }
-
-    private boolean checkValidUserData(String username,String password,String email){
-        if(username.length()>0 && password.length() > 0 && email.length() > 0){
-            return true;
-        }return false;
-    }
-
     private void setupConnection(String[] url){
 
         talkToDBTask task = new talkToDBTask();
        task.execute(url);
     }
 
-    private void loginTEST(String user, String pwd, String email, String type) {
-
-        //hardcoded test values.
-        String[] values = {"43","22","123","100","12","1"};
-        String[] keys = {"a","b","c","d","e","f"};
-        String[] empty1 = {};
-        String[] empty2 ={};
-        String username = user;
-        String password = pwd;
-        String mail = email;
-        String testType = "NEW USER";
-
-        String test = setupURLValueSend("LogIn.php?",empty1,empty2,username,password,"",testType);
-
-        setupConnection(new String[]{test});
-    }
 }
