@@ -7,8 +7,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import java.sql.SQLOutput;
 
 /**
  * Created by Martin on 2016-04-05.
@@ -24,6 +27,7 @@ public class LoginActivity extends Activity {
     ImageButton happyB;
     ImageButton sadB;
     int hoursSleep;
+    int mood;
     private Switch mySwitch;
     boolean Tswich;
 
@@ -50,14 +54,9 @@ public class LoginActivity extends Activity {
                 @Override
                 public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                     hoursSleep = newVal;
-                    System.out.println(hoursSleep);
                 }
             });
 
-        happyB = (ImageButton)findViewById(R.id.imageButton);
-        happyB.setOnClickListener(imgButtonHandler);
-        sadB = (ImageButton)findViewById(R.id.imageButton2);
-        sadB.setOnClickListener(imgButtonHandler);
 
         mySwitch = (Switch) findViewById(R.id.switch1);
         mySwitch.setChecked(false);
@@ -66,26 +65,51 @@ public class LoginActivity extends Activity {
 
     }
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
 
-    View.OnClickListener imgButtonHandler = new View.OnClickListener() {
-
-        public void onClick(View v) {
-            System.out.println("happy");
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radioButton:
+                if (checked)
+                    //Mood: Good
+                    mood = -5;
+                    break;
+            case R.id.radioButton2:
+                if (checked)
+                    // Mood: OK
+                    mood = 0;
+                    break;
+            case R.id.radioButton3:
+                if (checked)
+                    // Mood: Bad
+                    mood = 5;
+                    break;
         }
-    };
-
+    }
 
     public void onSwitch(View v){
 
 
         if(Tswich == false){
             Tswich = true;
-            System.out.println(Tswich);
             }
         else{
             Tswich = false;
-            System.out.println(Tswich);
         }
     }
 
+    public void onButtonClicked(View V){
+        System.out.println("Timmars sömn: "+hoursSleep);
+        System.out.println("Tränat: "+Tswich);
+        System.out.println("Humör: "+mood);
+
+
+    }
+
+
 }
+
+
+
