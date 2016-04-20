@@ -20,7 +20,7 @@
         </activity>
 
         <activity
-            android:name=".LoginActivity">
+            android:name=".DataInput">
         </activity>
         <activity android:name=".TalkToDBActivity" android:theme="@style/Theme.Transparent">
 
@@ -30,6 +30,12 @@
 
             android:name=".CreateUserActivity"
             android:windowSoftInputMode="adjustResize">
+        </activity>
+        <activity
+            android:name=".Homepage">
+        </activity>
+        <activity
+            android:name=".Statistics">
         </activity>
 
     </application>

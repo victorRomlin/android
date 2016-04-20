@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
                 String result = data.getStringExtra("result");
                 System.out.println(result);
-                Intent r = new Intent(MainActivity.this, LoginActivity.class);
+                Intent r = new Intent(MainActivity.this, Homepage.class);
                 r.putExtra("location", username);
                 startActivity(r);
             }
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
             System.out.println(username);
             System.out.println(password);
-            
+
             //login(username, password);
             Intent tent = new Intent(MainActivity.this, TalkToDBActivity.class);
             tent.putExtra("username",username);
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(result);
             //setText(result);
             if(result.contains("TRUE")){
-                Intent r = new Intent(MainActivity.this, LoginActivity.class);
+                Intent r = new Intent(MainActivity.this, DataInput.class);
                 r.putExtra("location", username);
                 startActivity(r);
                 Toast.makeText(getApplicationContext(), "Redirecting..", Toast.LENGTH_SHORT).show();

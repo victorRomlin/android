@@ -55,6 +55,7 @@
         android:id="@+id/editText2"
         android:hint="Lösenord"
         android:paddingRight="0dp"
+        android:singleLine="true"
         android:password="true"
         android:padding="10dp"
         android:textSize="20dp"
