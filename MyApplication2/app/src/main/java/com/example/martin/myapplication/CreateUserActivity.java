@@ -109,17 +109,16 @@ public class CreateUserActivity extends Activity {
     }
 
     private void onUserAlreadyExists(){
-        System.out.println("FAAAAAAAIL");
         EditText editTextPassword = ((EditText) findViewById(R.id.textpassword));
         EditText editTextUsername = ((EditText) findViewById(R.id.textusername));
         EditText editTextconfirmedpassword = ((EditText) findViewById(R.id.textconfirmpassword));
-        Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Username already exist", Toast.LENGTH_SHORT).show();
         editTextPassword.setText("");
         editTextUsername.setText("");
         editTextconfirmedpassword.setText("");
     }
     private boolean passwordValid(){
-        if(password == confirmedpassword) {
+        if(password.equals(confirmedpassword)) {
             return true;
         }
         return false;
