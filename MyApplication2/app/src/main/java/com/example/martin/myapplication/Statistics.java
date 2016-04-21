@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.widget.TextView;
 
 import com.example.martin.myapplication.R;
@@ -17,6 +18,9 @@ import com.jjoe64.graphview.series.LineGraphSeries;
  * Created by Sara on 2016-04-19.
  */
 public class Statistics extends Activity {
+    String[] keys;
+    String[] values;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.statistics);
@@ -27,6 +31,9 @@ public class Statistics extends Activity {
         int y1 = i.getIntExtra("y1", 0);
         int y2 = i.getIntExtra("y2", 0);
         int y3 = i.getIntExtra("y3", 0);
+        keys = i.getStringArrayExtra("keys");
+        values = i.getStringArrayExtra("values");
+
 
         //Här skapar vi våran graf, lämpligt nog döpt till "graph"
         GraphView graph = (GraphView) findViewById(R.id.graph);
@@ -82,13 +89,25 @@ public class Statistics extends Activity {
         series2.setColor(Color.parseColor("#A17947"));
 
         // alltid manuellt angivla värden och skalor för den 2:a axeln
-        graph.getSecondScale().setMinY(0);
-        graph.getSecondScale().setMaxY(100);
+        graph.getSecondScale().setMinY(-10);
+        graph.getSecondScale().setMaxY(10);
         graph.getGridLabelRenderer().setVerticalLabelsSecondScaleColor(Color.parseColor("#A98253"));
 
         //slutligen, lägg till serierna i grafen
-        graph.getSecondScale().addSeries(series2);
-        graph.addSeries(series);
+        //graph.getSecondScale().addSeries(receivedData(1));
+        graph.addSeries(receivedData(1));
+    }
 
+    public LineGraphSeries<DataPoint> receivedData(int key){
+        LineGraphSeries<DataPoint> returnDataSeries = new LineGraphSeries<>();
+        for(int i = 0; i < keys.length; i++){
+            int tempKey = Integer.parseInt(keys[i]);
+            int tempValue = Integer.parseInt(values[i]);
+            if(tempKey == key){
+                System.out.println(values[i]);
+                returnDataSeries.appendData(new DataPoint(i,tempValue),true,100);
+            }
+        }
+        return returnDataSeries;
     }
 }

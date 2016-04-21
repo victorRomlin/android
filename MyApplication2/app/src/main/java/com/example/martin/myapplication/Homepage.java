@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Martin on 2016-04-05.
@@ -33,6 +34,27 @@ public class Homepage extends Activity {
         pwd = intent.getStringExtra("password");
         textView8.setText("Välkommen "+user+"!");
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == 4){
+            if(resultCode == Activity.RESULT_OK){
+                Toast.makeText(getApplicationContext(), "Fetching data!", Toast.LENGTH_SHORT).show();
+                String [] keys = data.getStringArrayExtra("keys");
+                String [] values = data.getStringArrayExtra("values");
+                Intent r = new Intent(Homepage.this, Statistics.class);
+                r.putExtra("username", user);
+                r.putExtra("password", pwd);
+                r.putExtra("keys",keys);
+                r.putExtra("values",values);
+                startActivity(r);
+            }
+            if(resultCode == Activity.RESULT_CANCELED){
+                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+
+
+            }
+        }
+    }
 
     public void onButtonClick(View V){
         //dagens input
@@ -44,11 +66,19 @@ public class Homepage extends Activity {
         }
         // statistics
         if (V.getId() == R.id.button5){
+
+            Intent tent = new Intent(Homepage.this, TalkToDBActivity.class);
+            tent.putExtra("username",user);
+            tent.putExtra("password",pwd);
+            int requestCode = 4;
+            tent.putExtra("requestCode", requestCode);
+            startActivityForResult(tent, 4);
+           /*
             Intent r = new Intent(Homepage.this, Statistics.class);
             r.putExtra("username", user);
             r.putExtra("password", pwd);
-
             startActivity(r);
+            */
         }
     }
 

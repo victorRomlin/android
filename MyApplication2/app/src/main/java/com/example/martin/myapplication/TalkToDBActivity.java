@@ -108,6 +108,8 @@ public class TalkToDBActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
+            System.out.println(result);
+            System.out.println(requestType);
             if(result.contains("LOGIN SUCCESS") && requestType == 1){
                dbSuccess(result,false);
             }
@@ -124,7 +126,7 @@ public class TalkToDBActivity extends Activity {
             else if(!result.contains("LOGIN SUCCESS") && requestType == 2){
                 dbSuccess(result,false);
 
-            }else if(!result.contains("VARIABLES RETRIEVED") && requestType == 4){
+            }else if(result.contains("VARIABLES RETRIEVED") && requestType == 4){
                 dbSuccess(result,true);
             }
             else{
@@ -143,10 +145,15 @@ public class TalkToDBActivity extends Activity {
         try {
             JSONArray jsonKeys = object.getJSONArray("KEYS");
             JSONArray jsonValues = object.getJSONArray("VALUES");
+            System.out.println(jsonKeys.getString(0));
+            keys = new String[jsonKeys.length()];
+            values = new String[jsonValues.length()];
+
             for(int i = 0; i < jsonKeys.length(); i++){
                 keys[i] = jsonKeys.getString(i);
                 values[i] = jsonValues.getString(i);
             }
+            System.out.println(values[0]);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -183,7 +190,6 @@ public class TalkToDBActivity extends Activity {
         String URL = setupURLBasic(user,pwd,program);
         setupConnection(new String[]{URL});
     }
-
     private String checkType(JSONObject object){
         try {
             return object.getString("TYPE");
@@ -192,7 +198,6 @@ public class TalkToDBActivity extends Activity {
             return "ERROR";
         }
     }
-
     private Boolean checkCorrectUser(JSONObject object){
         try {
             System.out.println(object.getString("DATA"));
@@ -205,7 +210,6 @@ public class TalkToDBActivity extends Activity {
         }
         return false;
     }
-
     private Boolean checkFail(JSONObject object){
         try {
             return object.getString("TYPE").contains("ERROR");
@@ -213,7 +217,6 @@ public class TalkToDBActivity extends Activity {
             return false;
         }
     }
-
     private String getURLResponse(String url){
         HttpURLConnection connection = null;
         String response = "";

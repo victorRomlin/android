@@ -8,9 +8,11 @@
 
     <!-- we add graph view to display -->
     <com.jjoe64.graphview.GraphView
-        android:layout_width="320dp"
+        android:layout_width="match_parent"
         android:layout_height="200dp"
         android:id="@+id/graph"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight ="10dp"
+        android:layout_marginTop="77dp"
+        android:layout_alignParentTop="true"/>
 </RelativeLayout>
