@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     String username;
+    String password;
 
    //private GoogleApiClient client;
 
@@ -49,8 +50,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
                 String result = data.getStringExtra("result");
                 System.out.println(result);
+
                 Intent r = new Intent(MainActivity.this, Homepage.class);
-                r.putExtra("location", username);
+                r.putExtra("user", username);
+                r.putExtra("password", password);
+
                 startActivity(r);
             }
             if(resultCode == Activity.RESULT_CANCELED){
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             EditText editTextPassword = ((EditText) findViewById(R.id.editText1));
             EditText editTextUsername = ((EditText) findViewById(R.id.editText2));
             username = editTextPassword.getText().toString();
-            String password = editTextUsername.getText().toString();
+            password = editTextUsername.getText().toString();
             String email ="";
 
             System.out.println(username);

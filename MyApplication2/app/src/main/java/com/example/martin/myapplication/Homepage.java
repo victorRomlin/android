@@ -14,6 +14,10 @@ import android.widget.TextView;
 
 public class Homepage extends Activity {
 
+    String user;
+    String pwd;
+
+
 
 
     @Override
@@ -25,19 +29,25 @@ public class Homepage extends Activity {
         TextView textView8 = (TextView) findViewById(R.id.textView8);
 
         Intent intent = getIntent();
-        String str = intent.getStringExtra("location");
-        textView8.setText("Välkommen "+str+"!");
+        user = intent.getStringExtra("user");
+        pwd = intent.getStringExtra("password");
+        textView8.setText("Välkommen "+user+"!");
     }
 
     public void onButtonClick(View V){
-        //statistik
+        //dagens input
         if (V.getId() == R.id.button6){
             Intent r = new Intent(Homepage.this, DataInput.class);
+            r.putExtra("username", user);
+            r.putExtra("password", pwd);
             startActivity(r);
         }
-        //dagens input
+        // statistics
         if (V.getId() == R.id.button5){
             Intent r = new Intent(Homepage.this, Statistics.class);
+            r.putExtra("username", user);
+            r.putExtra("password", pwd);
+
             startActivity(r);
         }
     }
