@@ -13,11 +13,12 @@ import android.widget.Toast;
 /**
  * Created by Martin on 2016-04-07.
  */
-public class CreateUserActivity extends Activity {
+public class CreateUserActivity extends Activity implements OnTalkToDBFinish {
     String email;
     String username;
     String password;
     String confirmedpassword;
+    int requestType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class CreateUserActivity extends Activity {
 
             if (password.length()>4){
                 if(passwordValid()){
-                    checkUserExists();
+                    runDBtaskAddUser(1,false);
                 }
                 else{
                     clearFields();
@@ -97,15 +98,13 @@ public class CreateUserActivity extends Activity {
         startActivityForResult(tent, 2);
 
     }
-    public void checkUserExists(){
-
-        Intent tent = new Intent(CreateUserActivity.this, TalkToDBActivity.class);
-        tent.putExtra("username",username);
-        tent.putExtra("password",password);
-        int requestCode = 1;
-        tent.putExtra("requestCode", requestCode);
-        startActivityForResult(tent, 1);
-
+    public void checkUserExists(int request){
+        talkToDBTask task = new talkToDBTask(this);
+        task.setUsername(username);
+        task.setPwd(password);
+        requestType = request;
+        task.setRequestType(requestType);
+        task.execute();
     }
 
     private void onUserAlreadyExists(){
@@ -123,5 +122,41 @@ public class CreateUserActivity extends Activity {
         }
         return false;
     }
+    private void runDBtaskAddUser(int request,boolean addEmail){
+        talkToDBTask task = new talkToDBTask(this);
+        requestType = request;
+        task.setUsername(username);
+        task.setPwd(password);
+        if(addEmail){
+            task.setEmail(email);
+        }
+        task.setRequestType(requestType);
+        task.execute();
+    }
+    private void userWasAdded(){
 
+        Toast.makeText(getApplicationContext(), "User created!", Toast.LENGTH_SHORT).show();
+        Intent r = new Intent(CreateUserActivity.this, MainActivity.class);
+        startActivity(r);
+    }
+    @Override
+    public void onTaskCompleted() {
+        if(requestType == 1){
+            onUserAlreadyExists();
+        }
+        if(requestType == 2){
+            userWasAdded();
+
+        }
+    }
+
+    @Override
+    public void onTaskFailed() {
+        if(requestType == 1){
+            runDBtaskAddUser(2,true);
+        }
+        if(requestType == 2){
+            System.out.println("error");
+        }
+    }
 }

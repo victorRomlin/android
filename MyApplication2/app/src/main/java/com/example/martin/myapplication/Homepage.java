@@ -13,11 +13,11 @@ import android.widget.Toast;
  * ich han små vänner
  */
 
-public class Homepage extends Activity {
+public class Homepage extends Activity implements OnTalkToDBFinish {
 
     String user;
     String pwd;
-
+    talkToDBTask task;
 
 
 
@@ -33,32 +33,20 @@ public class Homepage extends Activity {
         user = intent.getStringExtra("user");
         pwd = intent.getStringExtra("password");
         textView8.setText("Välkommen "+user+"!");
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if (requestCode == 4){
-            if(resultCode == Activity.RESULT_OK){
-                Toast.makeText(getApplicationContext(), "Fetching data!", Toast.LENGTH_SHORT).show();
-                String [] keys = data.getStringArrayExtra("keys");
-                String [] values = data.getStringArrayExtra("values");
-                Intent r = new Intent(Homepage.this, Statistics.class);
-                r.putExtra("username", user);
-                r.putExtra("password", pwd);
-                r.putExtra("keys",keys);
-                r.putExtra("values",values);
-                startActivity(r);
-            }
-            if(resultCode == Activity.RESULT_CANCELED){
-                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
 
-
-            }
-        }
     }
 
+    private void runDBtask(int request){
+        task = new talkToDBTask(this);
+        task.setUsername(user);
+        task.setPwd(pwd);
+        task.setRequestType(request);
+        task.execute();
+    }
     public void onButtonClick(View V){
         //dagens input
         if (V.getId() == R.id.button6){
+
             Intent r = new Intent(Homepage.this, DataInput.class);
             r.putExtra("username", user);
             r.putExtra("password", pwd);
@@ -66,26 +54,29 @@ public class Homepage extends Activity {
         }
         // statistics
         if (V.getId() == R.id.button5){
-
-            Intent tent = new Intent(Homepage.this, TalkToDBActivity.class);
-            tent.putExtra("username",user);
-            tent.putExtra("password",pwd);
-            int requestCode = 4;
-            tent.putExtra("requestCode", requestCode);
-            startActivityForResult(tent, 4);
-           /*
-            Intent r = new Intent(Homepage.this, Statistics.class);
-            r.putExtra("username", user);
-            r.putExtra("password", pwd);
-            startActivity(r);
-            */
+            runDBtask(4);
         }
     }
 
 
+    @Override
+    public void onTaskCompleted() {
+        Intent r = new Intent(Homepage.this, Statistics.class);
+        String username = task.getUsername();
+        String password = task.getPwd();
+        String[] keys = task.getKeys();
+        String[] values = task.getValues();
+        r.putExtra("username", username);
+        r.putExtra("password", password);
+        r.putExtra("keys",keys);
+        r.putExtra("values",values);
+        startActivity(r);
+    }
 
-
-
+    @Override
+    public void onTaskFailed() {
+        System.out.println("shit");
+    }
 }
 
 

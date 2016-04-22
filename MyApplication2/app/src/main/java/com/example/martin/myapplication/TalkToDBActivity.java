@@ -38,108 +38,41 @@ public class TalkToDBActivity extends Activity {
     String[] keys;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         user = intent.getStringExtra("username");
         pwd = intent.getStringExtra("password");
-        requestType = intent.getIntExtra("requestCode",7);
-        switch(requestType){
+        requestType = intent.getIntExtra("requestCode", 7);
+        /*   switch (requestType) {
             case 1:
-                login(user,pwd);
+                login(user, pwd);
                 break;
             case 2:
                 email = intent.getStringExtra("email");
-                createUser(user,pwd,email);
+                createUser(user, pwd, email);
                 break;
             case 3:
                 values = intent.getStringArrayExtra("values");
                 System.out.println(Arrays.toString(values));
                 keys = intent.getStringArrayExtra("keys");
-                sendVariables(user,pwd,values,keys);
+                sendVariables(user, pwd, values, keys);
                 break;
             case 4:
-                getVariables(user,pwd);
+                getVariables(user, pwd);
                 break;
         }
     }
-
-    private class talkToDBTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            String response = "";
-            String output = "";
-
-            for(String url: params){
-                response = getURLResponse(url);
-            }
-            try {
-                JSONObject object = new JSONObject(response.toString());
-                    if (!checkFail(object)) {
-                        if(checkType(object).contains("LOGIN")){
-                            if (checkCorrectUser(object)) {
-                                output = "LOGIN SUCCESS";
-                                System.out.println(output);
-                            }
-                        }
-                        else if(checkType(object).contains("NEW USER")){
-                            if (checkCorrectUser(object)){
-                                output = "NEW USER ADDED";
-                            }
-                        }
-                        else if(checkType(object).contains("VAR ADDED")){
-                            if(checkCorrectUser(object)){
-                                output = "VARIABLE ADDED";
-
-                            }
-                        }else if(checkType(object).contains("RETR DATA")){
-                            storeValues(object);
-                            output = "VARIABLES RETRIEVED";
-                        }
-                    }
-
-                System.out.println(output);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return output;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            System.out.println(result);
-            System.out.println(requestType);
-            if(result.contains("LOGIN SUCCESS") && requestType == 1){
-               dbSuccess(result,false);
-            }
-            else if (result.contains("LOGIN SUCCESS") && requestType == 2){
-               dbFail(result);
-            }
-            else if(result.contains("NEW USER ADDED") && requestType == 2){
-                dbSuccess(result,false);
-
-            }
-            else if(result.contains("VARIABLE ADDED") && requestType == 3){
-                dbSuccess(result,false);
-            }
-            else if(!result.contains("LOGIN SUCCESS") && requestType == 2){
-                dbSuccess(result,false);
-
-            }else if(result.contains("VARIABLES RETRIEVED") && requestType == 4){
-                dbSuccess(result,true);
-            }
-            else{
-                dbFail(result);
-            }
-        }
+    */
     }
+}
 
+    /*
     private void login(String user, String pwd){
         String program = "LogIn.php?";
-        String URL = setupURLBasic(user,pwd,program);
+        this.URL = setupURLBasic(user,pwd,program);
         System.out.println(URL);
-        setupConnection(new String[]{URL});
+        //setupConnection(new String[]{URL});
     }
     private void storeValues(JSONObject object){
         try {
@@ -178,17 +111,17 @@ public class TalkToDBActivity extends Activity {
         System.out.println("onPostExecute");
     }
     private void createUser(String user, String pwd, String email){
-        String URL = setupURLNewUser(user,pwd,email);
-        setupConnection(new String[]{URL});
+        this.URL = setupURLNewUser(user,pwd,email);
+        //setupConnection(new String[]{URL});
     }
     private void sendVariables(String user, String pwd, String[]values, String[] keys){
-        String URL = setupURLValueSend(user,pwd,values,keys);
-        setupConnection(new String[]{URL});
+        this.URL = setupURLValueSend(user,pwd,values,keys);
+        //setupConnection(new String[]{URL});
     }
     private void getVariables(String user, String pwd){
         String program = "getdata.php?";
-        String URL = setupURLBasic(user,pwd,program);
-        setupConnection(new String[]{URL});
+        this.URL = setupURLBasic(user,pwd,program);
+        //setupConnection(new String[]{URL});
     }
     private String checkType(JSONObject object){
         try {
@@ -313,8 +246,9 @@ public class TalkToDBActivity extends Activity {
 
     private void setupConnection(String[] url){
 
-        talkToDBTask task = new talkToDBTask();
-       task.execute(url);
+        //talkToDBTask task = new talkToDBTask();
+       //task.execute(url);
     }
 
 }
+*/

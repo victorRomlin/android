@@ -20,7 +20,7 @@ import java.util.Arrays;
  * ich han små vänner
  */
 
-public class DataInput extends Activity {
+public class DataInput extends Activity implements OnTalkToDBFinish {
 
     //DET git här ska bort
     int BubbaFett;
@@ -34,6 +34,7 @@ public class DataInput extends Activity {
     int work;
     private Switch mySwitch;
     boolean Tswich;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,32 +121,29 @@ public class DataInput extends Activity {
         System.out.println(keys);
         System.out.println(username);
         System.out.println(password);
-        Intent tent = new Intent(DataInput.this, TalkToDBActivity.class);
-        tent.putExtra("values",values);
-        tent.putExtra("keys",keys);
-        tent.putExtra("username",username);
-        tent.putExtra("password",password);
-        int requestCode = 3;
-        tent.putExtra("requestCode", requestCode);
-        startActivityForResult(tent, 3);
+        runDBtask(values,keys);
 
 
+    }
+    private void runDBtask(String[] values, String[] keys){
+        talkToDBTask task = new talkToDBTask(this);
+        task.setUsername(username);
+        task.setPwd(password);
+        task.setKeys(keys);
+        task.setValues(values);
+        task.setRequestType(3);
+        task.execute();
     }
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if (requestCode == 3){
-            if(resultCode == Activity.RESULT_OK){
-                Toast.makeText(getApplicationContext(), "Variables added!", Toast.LENGTH_SHORT).show();
-            }
-            if(resultCode == Activity.RESULT_CANCELED){
-                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-
-
-            }
-        }
+    public void onTaskCompleted() {
+        Toast.makeText(getApplicationContext(), "Variables added!", Toast.LENGTH_SHORT).show();
     }
 
-
+    @Override
+    public void onTaskFailed() {
+        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+        System.out.println("shit");
+    }
 }
 
 

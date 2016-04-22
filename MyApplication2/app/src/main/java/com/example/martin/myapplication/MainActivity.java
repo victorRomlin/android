@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnTalkToDBFinish {
     String username;
     String password;
 
@@ -18,24 +18,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if (requestCode == 1){
-            if(resultCode == Activity.RESULT_OK){
-                setText(true);
-
-                //start new Activity
-                Intent r = new Intent(MainActivity.this, Homepage.class);
-                r.putExtra("user", username);
-                r.putExtra("password", password);
-                startActivity(r);
-            }
-            if(resultCode == Activity.RESULT_CANCELED){
-                setText(false);
-            }
-        }
     }
 
     public void onButtonClick(View V){
@@ -50,20 +32,20 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(username);
             System.out.println(password);
 
-            //login start db activity
-            Intent tent = new Intent(MainActivity.this, TalkToDBActivity.class);
-            tent.putExtra("username",username);
-            tent.putExtra("password",password);
-            int requestCode = 1;
-            tent.putExtra("requestCode", requestCode);
-            startActivityForResult(tent, 1);
+            runDBtask();
         }
         else if (V.getId() == R.id.button2){
             Intent r = new Intent(MainActivity.this, CreateUserActivity.class);
             startActivity(r);
         }
     }
-
+    private void runDBtask(){
+        talkToDBTask task = new talkToDBTask(this);
+        task.setUsername(username);
+        task.setPwd(password);
+        task.setRequestType(1);
+        task.execute();
+    }
     private void setText(boolean success){
         if(success){
             Toast.makeText(getApplicationContext(), "Redirecting...", Toast.LENGTH_SHORT).show();
@@ -75,5 +57,18 @@ public class MainActivity extends AppCompatActivity {
             editTextUsername.setText("");
             Toast.makeText(getApplicationContext(), "Not a valid user", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onTaskCompleted() {
+        Intent r = new Intent(MainActivity.this, Homepage.class);
+        r.putExtra("user", username);
+        r.putExtra("password", password);
+        startActivity(r);
+    }
+
+    @Override
+    public void onTaskFailed() {
+        System.out.println("fail");
     }
 }
